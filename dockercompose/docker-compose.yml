@@ -1,0 +1,71 @@
+version: "3.9"
+
+services:
+  test-db:
+    image: mysql:8.0
+    container_name: test-db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: admin123
+      MYSQL_DATABASE: test
+    ports:
+      - "3306:3306"
+    networks:
+      - test-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-padmin123"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  c-app-products-v1:
+    image: sebraxter/img-product:v13
+    container_name: c-app-products-v1
+    ports:
+      - "8081:8081"
+    environment:
+      - PORT=8081
+      - DB_HOST=test-db
+      - DB_PORT=3306
+      - DB_DATABASE=test
+      - DB_USER=root
+      - DB_PASSWORD=admin123
+    depends_on:
+      test-db:
+        condition: service_healthy
+    networks:
+      - test-network
+
+  c-app-categories:
+    image: sebraxter/img-category:v9
+    container_name: c-app-categories
+    ports:
+      - "8082:8082"
+    environment:
+      - PORT=8082
+      - DB_HOST=test-db
+      - DB_PORT=3306
+      - DB_DATABASE=test
+      - DB_USER=root
+      - DB_PASSWORD=admin123
+    depends_on:
+      test-db:
+        condition: service_healthy
+    networks:
+      - test-network
+
+  frontend:
+    image: sebraxter/frontend-tienda:v3
+    container_name: angular-frontend
+    ports:
+      - "4200:80"
+    depends_on:
+      - c-app-products-v1
+      - c-app-categories
+    networks:
+      - test-network
+
+networks:
+  test-network:
+    driver: bridge
+
