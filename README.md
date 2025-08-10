@@ -112,7 +112,7 @@ docker-compose up -d
 ### Link de navegación web
 
 ```bash
-http://http://13.58.97.22/
+http://13.58.97.22/
 ```
 
 
