@@ -23,13 +23,19 @@ public class Product {
     @DecimalMin(value = "0.01", message = "Price must be greater than 0")
     private double price;
 
+
+    @NotNull (message = "Category cannot be null")
+    @Column(name = "category_id")
+    private Long categoryId;
+
     public Product() {
     }
 
-    public Product(String name, String description, double price) {
+    public Product(String name, String description, double price, Long categoryId) {
         this.name = name;
         this.description = description;
         this.price = price;
+        this.categoryId = categoryId;
     }
 
     public Long getId() {
@@ -63,4 +69,12 @@ public class Product {
     public void setPrice(double price) {
         this.price = price;
     }
+
+    public Long getCategoryId() {
+        return categoryId;
+    }
+
+    public void setCategoryId(Long categoryId) {
+        this.categoryId = categoryId;
+    }   
 }

@@ -2,6 +2,7 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { ProductosSService, Product, ProductInput } from '../productos-s.service';
 import { CommonModule, NgFor, NgIf } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { CategorieSService,Category } from '../categorie-s.service';
 
 @Component({
   selector: 'app-products',
@@ -11,16 +12,28 @@ import { FormsModule } from '@angular/forms';
 })
 export class ProductsComponent {
   private productosService = inject(ProductosSService); // inyección del servicio
+  private categoriasService = inject(CategorieSService);
+
   productos: Product[] = []; // aquí se guardarán los datos
+  categorias: Category[] = [];
+  categoriaNombre = new Map<number, string>(); // cache id->nombre
+
 
   ngOnInit(): void {
+    // cargar productos
     this.productosService.getAllProducts().subscribe({
-      next: (data) => {
-        this.productos = data;
+      next: (data) => this.productos = data,
+      error: (err) => console.error('Error al obtener productos:', err)
+    });
+
+    // cargar categorías
+    this.categoriasService.getAllCategories().subscribe({
+      next: (cats) => {
+        this.categorias = cats;
+        this.categoriaNombre.clear();
+        cats.forEach(c => this.categoriaNombre.set(c.id, c.name));
       },
-      error: (err) => {
-        console.error('Error al obtener productos:', err);
-      }
+      error: (err) => console.error('Error al obtener categorías:', err)
     });
   }
 
@@ -38,10 +51,10 @@ export class ProductsComponent {
 
   //Agregar producto
   modalAgregarAbierto: boolean = false;
-  nuevoProducto: ProductInput = {name: '', description: '', price: 0 };
+  nuevoProducto: ProductInput = {name: '', description: '', price: 0, categoryId: null as any };
   abrirModalAgregar(): void {
     this.modalAgregarAbierto = true;
-    this.nuevoProducto = {name: '', description: '', price: 0 };
+    this.nuevoProducto = {name: '', description: '', price: 0, categoryId: null as any };
   }
 
   agregarProducto(): void {
@@ -60,14 +73,14 @@ export class ProductsComponent {
 
   cerrarModalAgregar(): void {
     this.modalAgregarAbierto = false;
-    this.nuevoProducto = {name: '', description: '', price: 0 };
+    this.nuevoProducto = {name: '', description: '', price: 0 , categoryId: null as any};
   }
 
 
   //Editar producto
 
   modalEdicionAbierta: boolean = false;
-  productoEditado: Product = { id: 0, name: '', description: '', price: 0 };
+  productoEditado: Product = { id: 0, name: '', description: '', price: 0 , categoryId: null as any};
   abrirModalEdicion(producto: Product) {
     this.modalEdicionAbierta = true;
     this.productoEditado = { ...producto }; // Copia para no modificar directamente
@@ -75,7 +88,7 @@ export class ProductsComponent {
 
   cerrarModalEdicion(): void {
     this.modalEdicionAbierta = false;
-    this.productoEditado = { id: 0, name: '', description: '', price: 0 };
+    this.productoEditado = { id: 0, name: '', description: '', price: 0 , categoryId: null as any};
   }
 
   guardarCambios(): void {
@@ -133,6 +146,12 @@ productosFiltrados(): Product[] {
     producto.price.toString().includes(filtro)
   );
 }
+
+  // Helper nombre categoría
+  obtenerNombreCategoria(id: number | null | undefined): string {
+    if (id == null) return '';
+    return this.categoriaNombre.get(id) ?? `#${id}`;
+  }
 
 
 }

@@ -50,5 +50,11 @@ public class ProductController {
         return ResponseEntity.noContent().build();
     }
 
+    @GetMapping(params = "categoryId")
+    public List<Product> getByCategory(@RequestParam Long categoryId) {
+        return productService.getByCategoryId(categoryId);
+    }
+
+
 
 }

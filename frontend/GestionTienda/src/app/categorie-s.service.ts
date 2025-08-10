@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-
+import { environment } from '../environments/environment';
 // Esto representa una categoría recibida del backend
 export interface Category {
   id: number;
@@ -21,7 +21,8 @@ export interface CategoryInput {
   providedIn: 'root'
 })
 export class CategorieSService {
-  private apiUrl = 'http://localhost:8082/api/categories';
+  //private apiUrl = 'http://localhost:8082/api/categories';
+  private apiUrl = environment.categoriesApi;
 
   constructor(private http:HttpClient) { }
 
