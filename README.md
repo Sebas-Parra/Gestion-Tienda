@@ -109,6 +109,19 @@ docker-compose up -d
 - Sirve el frontend en /
 - Proxy a gateway en /api/ (con CORS habilitado y sin pasar Origin/Referer al backend para evitar 403 por CORS/CSRF).
 
+### Para correr el docker-compose desde el servidor de AWS
+Primero entramos a la consola del servidor AWS
+```bash
+ssh -i docker (Aqui va el .pem) ec2-user@13.58.97.22
+```
+Luego vamos a la carpeta de tienda
+```bash
+cd /tienda
+```
+Por ultimo corremos el docker compose
+```bash
+docker-compose up -d
+```
 ### Link de navegación web
 
 ```bash
